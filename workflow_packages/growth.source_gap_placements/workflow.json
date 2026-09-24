@@ -1,0 +1,113 @@
+{
+  "package_format": "tin-workflow-package-v1",
+  "definition": {
+    "key": "growth.source_gap_placements",
+    "title": "Find the pages your competitors are on and you aren't",
+    "description": "Finds third-party roundups, directories and resource pages that list your competitors but not you, then delivers an evidence-checked placement pack: which pages to pursue, the exact ask and a listing blurb for each, and why the rest were rejected. Nothing is sent.",
+    "version": "1.0.0",
+    "executor": "codex.procedure",
+    "schedule_modes": [
+      "on_demand"
+    ],
+    "input_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_id",
+        "category"
+      ],
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "title": "What you sell, in a buyer's words",
+          "x-tin-ui": {
+            "control": "text",
+            "order": 10
+          }
+        },
+        "buyer_questions": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "default": [],
+          "title": "Questions buyers ask (optional, up to 5)"
+        },
+        "competitors": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "default": [],
+          "title": "Competitors (optional, up to 6)"
+        },
+        "market": {
+          "type": "string",
+          "maxLength": 100,
+          "default": "",
+          "title": "Country or region (optional)",
+          "x-tin-ui": {
+            "control": "text",
+            "order": 40
+          }
+        },
+        "max_targets": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 12,
+          "default": 8,
+          "title": "Most pages to recommend",
+          "x-tin-ui": {
+            "control": "counter",
+            "order": 50
+          }
+        },
+        "exclusions": {
+          "type": "string",
+          "maxLength": 1000,
+          "default": "",
+          "title": "Sites or partners to leave alone (optional)",
+          "x-tin-ui": {
+            "control": "textarea",
+            "order": 60
+          }
+        }
+      }
+    },
+    "procedure": {
+      "prompt_path": "PROMPT.md",
+      "skills_path": "skills",
+      "skill_files": [
+        "skills/source-gap-placements/SKILL.md",
+        "skills/source-gap-placements/VALIDATE.md"
+      ],
+      "entry_skill": "source-gap-placements",
+      "workspace": {
+        "kind": "project.state"
+      },
+      "sandbox": {
+        "profile": "isolated",
+        "egress": "fenced",
+        "timeout_seconds": 1200
+      },
+      "output": {
+        "kind": "project.artifact",
+        "path": "reports/SOURCE_GAP_PLACEMENTS.md",
+        "media_type": "text/markdown",
+        "max_bytes": 120000
+      }
+    }
+  }
+}
